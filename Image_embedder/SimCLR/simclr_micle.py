@@ -82,7 +82,8 @@ class SimCLR_micle(object):
 
 
         n_iter = 0
-
+        save_dir = f'/content/drive/MyDrive/MML/medical_dataset/Duke_GIRI/simclr_micle'
+        os.makedirs(save_dir, exist_ok=True)
         for epoch_counter in range(self.args.epochs):
             for images, _ in tqdm(train_loader):
                 for i in range(images.shape[0]):
@@ -115,9 +116,10 @@ class SimCLR_micle(object):
                 self.scheduler.step()
 
         checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
+        save_path = os.path.join(save_dir, checkpoint_name)
         save_checkpoint({
             'epoch': self.args.epochs,
             'arch': self.args.arch,
             'state_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict(),
-        }, filename=checkpoint_name)
+        }, filename=save_path)

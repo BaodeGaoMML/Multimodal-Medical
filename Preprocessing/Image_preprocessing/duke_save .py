@@ -3,9 +3,8 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-data_path_txt = '/content/drive/MyDrive/MML/QIN/all_paths.txt'
-data_path = '/content/drive/MyDrive/MML/QIN/image_2D/'
-
+data_path_txt = '/content/drive/MyDrive/MML/medical_dataset/Duke/all_paths.txt'
+data_path = '/content/drive/MyDrive/MML/medical_dataset/Duke/image_2D/'
 f = open(data_path_txt,'r')
 lines = f.readlines()
 

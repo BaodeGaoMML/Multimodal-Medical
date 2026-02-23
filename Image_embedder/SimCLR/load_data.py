@@ -2,7 +2,7 @@ import os
 import numpy as np
 import torch
 import torchvision.transforms as transforms
-
+import re
 from tqdm import tqdm
 import cv2
 
@@ -19,9 +19,14 @@ def load_data(args):
     elif data_name =='CMMD':
         root_dir = "./../../medical_dataset/CMMD/image_2D/"
     elif data_name =='QIN':
-        root_dir = './../../medical_dataset/QIN/image_2D/'
+        root_dir ='/content/drive/MyDrive/MML/QIN/image_2D/'
+    elif data_name =='Duke':
+        root_dir ='/content/drive/MyDrive/MML/medical_dataset/Duke/image_2D/'
+    elif data_name =='Duke_GIRI':
+        root_dir ='/content/drive/MyDrive/MML/medical_dataset/Duke_GIRI/image_2D/'    
 
     files = os.listdir(root_dir)
+    print(root_dir)
     i=0
     name_list = []
     for file in tqdm(files):
@@ -41,12 +46,30 @@ def load_data(args):
             if 'CMMD' in root_dir:
                 id_ = file.split('-')[0][-1] +file.split('-')[1][0:4]
                 num = '0'
-            else:
-                id_, num, coordinate = file.split('_')
-            #0000 for escape from unexpected duplication of id + num
-            names = int(id_ +'0000' + num)
-            name_list.append(names)
+            elif data_name =='Duke':
+            # Format: Breast_MRI_001_0.png
+              #print('YYYYYYYYYYYYYYYYYYYYYYYYYY')
+              parts = file.split('.')
+            
+            # Parse Subject ID: QIN-BREAST-01-0001
+              subject_str = parts[0]
+              coordinate0, coordinate1, id_, num = subject_str.split('_')
+            elif 'Duke_GIRI' in root_dir:
+            # Format: Breast_MRI_024slice_90_stack.png
+              #print('YYYYYYYYYYYYYYYYYYYYYYYYYY')
+              parts = file.split('.')
+            
+            # Parse Subject ID: QIN-BREAST-01-0001
+              subject_str = parts[0]
+              coordinate0, coordinate1, id_, num, coordinate2 = subject_str.split('_')            
+            
 
+            else:
+                coordinate0, coordinate1,id_, num = file.split('_')
+            #0000 for escape from unexpected duplication of id + num
+            names = int(re.search(r'\d+', id_).group())
+            name_list.append(names)
+            
             del img
             del gray
             del gray_three
@@ -64,9 +87,28 @@ def load_data(args):
             if 'CMMD' in root_dir:
                 id_ = file.split('-')[0][-1] +file.split('-')[1][0:4]
                 num = '0'
+            elif data_name =='Duke':
+            # Format: Breast_MRI_001_0.png
+              
+              parts = file.split('.')
+            
+            # Parse Subject ID: QIN-BREAST-01-0001
+              subject_str = parts[0]
+              coordinate0, coordinate1, id_, num = subject_str.split('_')
+            
+            elif 'Duke_GIRI' in root_dir:
+            # Format: Breast_MRI_024slice_90_stack.png
+              
+              parts = file.split('.')
+            
+            # Parse Subject ID: QIN-BREAST-01-0001
+              subject_str = parts[0]
+              coordinate0, coordinate1, id_, num, coordinate2= subject_str.split('_')
+                
+           
             else:
                 id_, num, coordinate = file.split('_')
-            names = int(id_ +'0000' + num)
+            names = int(int(re.search(r'\d+', id_).group()))
             name_list.append(names)
             
             del img
@@ -101,5 +143,5 @@ def load_data(args):
             label_list__.append(l)
             del coor_img_t
         ii+=1
-    del iamges
+    del images
     return train_images,train_names, image_list, label_list__
